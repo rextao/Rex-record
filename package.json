@@ -1,0 +1,19 @@
+{
+  "name": "my-record",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rextao/my-record.git"
+  },
+  "author": "rextao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rextao/my-record/issues"
+  },
+  "homepage": "https://github.com/rextao/my-record#readme"
+}
