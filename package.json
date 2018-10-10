@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test"
+    "start": "node js/main.js",
+    "test": "npm run lint",
+    "lint": "eslint --fix js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,15 @@
   "bugs": {
     "url": "https://github.com/rextao/my-record/issues"
   },
-  "homepage": "https://github.com/rextao/my-record#readme"
+  "homepage": "https://github.com/rextao/my-record#readme",
+  "devDependencies": {
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  },
+  "dependencies": {
+    "csv": "^4.0.0",
+    "csv-parse": "^3.1.3",
+    "iconv-lite": "^0.4.24"
+  }
 }
