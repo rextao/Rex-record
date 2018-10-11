@@ -6,7 +6,7 @@ const tools = require('./tools');
  * 根据path目录，以encoding的编码形式，读取数据
  * @param path        路径
  * @param encoding    读取编码，默认utf8
- * @return {Promise<any>}
+ * @return {Promise<any>}  返回值Promise(string)
  */
 function readFileAsync(path, encoding = 'utf8') {
   return new Promise((resolve, reject) => {
@@ -16,9 +16,7 @@ function readFileAsync(path, encoding = 'utf8') {
       } else {
         // 读取的文档按照encoding解码
         const cdata = iconv.decode(data, encoding);
-        // 数据转换为table
-        const table = tools.stringToTable(cdata);
-        resolve(table);
+        resolve(cdata);
       }
     });
   });
