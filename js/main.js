@@ -1,12 +1,14 @@
-const parse = require('csv-parse');
+const file = require('./file');
+const config = require('./config');
 
-const csv = require('./csv');
-
-
-csv.readFileAsync('./../billtemp/100023557368_205725527657.csv', 'gbk').then((data) => {
-  parse(data, (err, output) => {
-    console.log(output);
-  });
-}).catch((err) => {
-  console.log(err);
-});
+const { folder } = config;
+const billtemp = `./../${folder.billtemp}`;
+file.getFilesAsync(billtemp)
+  .then(files => Promise.all([
+    file.readFileAsync(billtemp + files[0], 'gbk'),
+    file.readFileAsync(billtemp + files[1], 'gbk'),
+  ]))
+  .then((data) => {
+    console.log(data[0].length);
+  })
+  .catch(err => console.log(err));
