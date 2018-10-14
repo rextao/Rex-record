@@ -5,8 +5,6 @@ const folder = {
 };
 // 文件名字下的默认账单
 const filename = {
-  // 账单解析顺序，避免读取文件后，解析错误
-  billOrder: ['alipay', 'cgb'],
   bill: {
     // billtemp,文件夹下账单名，程序会搜索value，如搜索到则此账单为key
     // 例如，cgb: '123123',如文件名搜索到123123，则认为这个文件为cgb
