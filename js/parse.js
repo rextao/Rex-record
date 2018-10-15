@@ -1,5 +1,9 @@
+/**
+ * 都会在账单第一行增加自定义信息，compare从第二行开始，
+ */
 const config = require('./config');
 const tools = require('./tools');
+const { date } = require('./tools');
 const file = require('./file');
 
 const { folder } = config;
@@ -67,6 +71,10 @@ class AlipayParser {
     for (let i = 0; i < data.length; i += 1) {
       const row = data[i];
       const newrow = [];
+      // 将"起始日期:[2018-09-07 00:00:00]    终止日期:[2018-10-07 00:00:00]"
+      if (i === 2) {
+        table.push(row[0]);
+      }
       // 保证金额一列存在，再提取数据
       if (row[9]) {
         // tools.replaceT将row[0]中的\t与两边空格去掉
@@ -93,9 +101,9 @@ class AlipayParser {
     return file.readFileAsync(this.folderName + this.filename, 'gbk').then((outputstr) => {
       // 利用不同类型账单对应的convertor对数据进行转换
       const converData = AlipayParser.convertor(outputstr);
-      console.log('alipay账单数：', converData.length);
       // 提取账单中需要的信息，并对数据进行转换；
       const exbill = AlipayParser.extract(converData);
+      console.log('alipay账单数：', exbill.length);
       return Promise.resolve(exbill);
     });
   }
@@ -126,6 +134,8 @@ class CgbParser {
   // 提取需要的信息
   static extract(data = []) {
     const table = [];
+    // 在table第一行增加自定义信息，用于表示一些内容；无需要则增加no
+    table.push('no');
     for (let i = 0; i < data.length; i += 1) {
       const row = data[i];
       const newrow = [];
@@ -148,9 +158,9 @@ class CgbParser {
     return file.readFileAsync(this.folderName + this.filename, 'gbk').then((outputstr) => {
       // 利用不同类型账单对应的convertor对数据进行转换
       const converData = CgbParser.convertor(outputstr);
-      console.log('cgb账单数：', converData.length);
       // 提取账单中需要的信息，并对数据进行转换；
       const exbill = CgbParser.extract(converData);
+      console.log('cgb账单数：', exbill.length);
       return Promise.resolve(exbill);
     });
   }
@@ -176,6 +186,15 @@ function callParser(billNameMap) {
 }
 
 class Parser {
+  static getBillDate(data) {
+    const datestr = data[0][0];
+    const arr = datestr.split('[');
+    const startTime = arr[1].split(' ')[0];
+    let endTime = arr[2].split(' ')[0];
+    endTime = date.subtract(endTime, 1, 'days').format('YYYY-MM-DD');
+    return [startTime, endTime];
+  }
+
   static init() {
     // 实际账单key-文件名
     const realBillName = getRealBillName();
