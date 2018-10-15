@@ -2,6 +2,8 @@
 const folder = {
   // 下载账单的临时存放，程序运行成功后，会删除此文件夹内容
   billtemp: 'billtemp/',
+  // 下载账单备份地方
+  billoriginal: 'billoriginal/',
 };
 // 文件名字下的默认账单
 const filename = {
