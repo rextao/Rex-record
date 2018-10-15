@@ -35,6 +35,10 @@ const date = {
   isSame(t1, t2, unitoftime) {
     return moment(t1).isSame(t2, unitoftime);
   },
+
+  subtract(t1, num, unitoftime) {
+    return moment(t1).subtract(num, unitoftime);
+  },
 };
 
 exports.replaceT = replaceT;
