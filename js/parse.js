@@ -1,4 +1,5 @@
 /**
+ * 账单解析器，包含各个账单的解析方法
  * 都会在账单第一行增加自定义信息，compare从第二行开始，
  */
 const config = require('./config');
@@ -16,7 +17,7 @@ const { bill, billOrder } = config.filename;
  * @returns {Promise<any | never>}
  */
 function getRealBillName() {
-  return file.getFilesAsync(billtemp).then((files) => {
+  return file.readDirAsync(billtemp).then((files) => {
     const result = {};
     const hasAlipay = bill.alipay;// 是否有支付宝账单
     if (!hasAlipay) {
@@ -199,11 +200,18 @@ class Parser {
     // 实际账单key-文件名
     const realBillName = getRealBillName();
     return realBillName.then((billNameMap) => {
+      const len = Object.keys(billNameMap).length;
+      if (len === 0) {
+        return Promise.reject(new Error('billtemp文件夹下无账单，无法继续进行文件解析'));
+      }
+      if (len === 1) {
+        return Promise.reject(new Error('billtemp文件夹需要至少两种账单才能解析'));
+      }
       // 调用billNameMap中的对应的解析器
       // 如新增账单，需要增加调用，callParser返回的是Promise.all
       const promiseAllParser = callParser(billNameMap);
       return promiseAllParser.then(data => Promise.resolve(data));
-    }).catch(err => console.log(err));
+    });
   }
 }
 

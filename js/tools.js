@@ -39,6 +39,14 @@ const date = {
   subtract(t1, num, unitoftime) {
     return moment(t1).subtract(num, unitoftime);
   },
+
+  add(t1, num, unitoftime) {
+    return moment(t1).add(num, unitoftime);
+  },
+
+  moment(date) {
+    return moment(date);
+  }
 };
 
 exports.replaceT = replaceT;

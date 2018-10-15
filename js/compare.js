@@ -1,7 +1,7 @@
 // 用于对账本数据的比较
 const { date } = require('./tools');
 
-class Process {
+class Compare {
   constructor(data) {
     this.data = data;
   }
@@ -12,7 +12,7 @@ class Process {
     const others = this.data.splice(1);
     // others包含除alipay之外的其他账单
     if (others[0]) {
-      Process.cgbWithAlipay(others[0], alipayData);
+      Compare.cgbWithAlipay(others[0], alipayData);
     }
   }
 
@@ -47,4 +47,4 @@ class Process {
     this.alipayWithOthers();
   }
 }
-exports.Process = Process;
+exports.Compare = Compare;
