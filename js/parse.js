@@ -5,7 +5,7 @@ const file = require('./file');
 const { folder } = config;
 const billtemp = `./../${folder.billtemp}`;
 
-const { bill } = config.filename;
+const { bill, billOrder } = config.filename;
 
 /**
  * 根据config配置filename.bill获取真实的文件名
@@ -14,14 +14,13 @@ const { bill } = config.filename;
 function getRealBillName() {
   return file.getFilesAsync(billtemp).then((files) => {
     const result = {};
-    const billKeys = Object.keys(bill);
     const hasAlipay = bill.alipay;// 是否有支付宝账单
     if (!hasAlipay) {
       console.log('*************无支付宝账单无法解析*************');
       console.log(files);
       return Promise.reject();
     }
-    billKeys.forEach((key) => {
+    billOrder.forEach((key) => {
       const vals = bill[key];
       files.forEach((item, index) => {
         if (item.indexOf(vals) !== -1) {
@@ -46,11 +45,25 @@ class AlipayParser {
     return tools.stringToTable(str, row => row.split(','));
   }
 
+  // 交易是否成功
+  static isDeal(str) {
+    return str.indexOf('交易关闭') === -1;
+  }
+
+  /**
+   * 价格处理，支出为正，收入为负，为了与其他账单整合
+   * @param price
+   * @param inorout
+   * @return {number}
+   */
+  static priceProcess(price, inorout) {
+    const p = parseFloat(price);
+    return inorout.indexOf('收入') !== -1 ? -p : p;
+  }
+
   // 提取需要的信息
   static extract(data = []) {
     const table = [];
-    // 为了标识账单
-    table.push('alipay');
     for (let i = 0; i < data.length; i += 1) {
       const row = data[i];
       const newrow = [];
@@ -60,14 +73,17 @@ class AlipayParser {
         const time = tools.replaceT(row[4]);
         newrow.push(time.split(' ')[0]);// 最近修改时间
         const price = tools.replaceT(row[9]);
-        if (i === 4) {// 避免文字被转换为NaN
+        const inorout = tools.replaceT(row[10]);// 收/支
+        const state = tools.replaceT(row[11]);// 交易状态
+        if (i === 4) { // 避免文字被转换为NaN
           newrow.push(price);// 入账金额
-        } else {
-          newrow.push(parseFloat(price));// 入账金额
+        } else if (i !== 4 && AlipayParser.isDeal(state)) { // 交易成功再入
+          newrow.push(AlipayParser.priceProcess(price, inorout));// 入账金额
+          newrow.push(tools.replaceT(row[7]));// 交易对方
+          newrow.push(tools.replaceT(row[8]));// 商品名称
+          newrow.push(state);// 交易状态
+          table.push(newrow);
         }
-        newrow.push(tools.replaceT(row[7]));// 交易对方
-        newrow.push(tools.replaceT(row[8]));// 商品名称
-        table.push(newrow);
       }
     }
     return table;
@@ -110,7 +126,6 @@ class CgbParser {
   // 提取需要的信息
   static extract(data = []) {
     const table = [];
-    table.push('cgb');
     for (let i = 0; i < data.length; i += 1) {
       const row = data[i];
       const newrow = [];
@@ -150,16 +165,16 @@ function callParser(billNameMap) {
       return new AlipayParser(name);
     },
   };
-  const keys = Object.keys(billNameMap);
   const promiseArr = [];
   // billNameMap存储的是
-  keys.forEach((item) => {
+  billOrder.forEach((item) => {
     const vals = billNameMap[item];
     const parser = parseMap[item](vals);
     promiseArr.push(parser.init());
   });
   return Promise.all(promiseArr);
 }
+
 class Parser {
   static init() {
     // 实际账单key-文件名
