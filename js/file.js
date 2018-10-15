@@ -2,7 +2,8 @@ const iconv = require('iconv-lite');
 const fs = require('fs');
 const config = require('./config');
 
-const { folder } = config;
+const {folder} = config;
+const billtemp = `./../${folder.billtemp}`;
 
 /**
  * 根据path目录，以encoding的编码形式，读取数据
@@ -29,7 +30,7 @@ function readFileAsync(path, encoding = 'utf8') {
  * @param path         要获取文件的目录
  * @return {Promise<any>}   promise，resolve为文件列表数组arr
  */
-function getFilesAsync(path) {
+function readDirAsync(path) {
   return new Promise((resolve, reject) => {
     fs.stat(path, (err, stats) => {
       if (stats.isDirectory()) {
@@ -47,17 +48,26 @@ function getFilesAsync(path) {
   });
 }
 
-function moveFilesAsync(from, to) {
-  return new Promise((resolve, reject) => {
-    fs.access(to, fs.constants.F_OK, (err) => {
-      if (err) {
-        reject(err);
-      }
+/**
+ * 将文件移动到to这个目录下
+ * @param fromArr 为某个目录下的具体文件arr，或具体某个文件
+ * @param to
+ */
+function moveFilesAsync(fromfolder, fromfiles, to) {
+  fs.access(to, fs.constants.F_OK, (err) => {
+    if (err) {
+      fs.mkdirSync(to);
+    }
+    fromfiles.forEach((item) => {
+      fs.rename(`${fromfolder}${item}`, `${to}/${item}`, (renameerr) => {
+        if (renameerr) {
+          throw renameerr;
+        }
+      });
     });
-  })
-
+  });
 }
 
-
 exports.readFileAsync = readFileAsync;
-exports.getFilesAsync = getFilesAsync;
+exports.readDirAsync = readDirAsync;
+exports.moveFilesAsync = moveFilesAsync;
