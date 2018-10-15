@@ -1,6 +1,8 @@
 const iconv = require('iconv-lite');
 const fs = require('fs');
-const tools = require('./tools');
+const config = require('./config');
+
+const { folder } = config;
 
 /**
  * 根据path目录，以encoding的编码形式，读取数据
@@ -43,6 +45,17 @@ function getFilesAsync(path) {
       }
     });
   });
+}
+
+function moveFilesAsync(from, to) {
+  return new Promise((resolve, reject) => {
+    fs.access(to, fs.constants.F_OK, (err) => {
+      if (err) {
+        reject(err);
+      }
+    });
+  })
+
 }
 
 
