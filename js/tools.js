@@ -1,3 +1,4 @@
+const moment = require('moment');
 // 工具函数
 function replaceT(str = '') {
   return str.replace('/\t/g').trim();
@@ -21,9 +22,21 @@ function stringToTable(data, rowSplitFunc, rowSeparator = '\n') {
   return table;
 }
 
-function indexOfFromArr(arr, str) {
-  return arr.filter(item => str.indexOf(item));
-}
+// 时间控制函数
+const date = {
+  /**
+   * 比较时间是否一致，moment封装
+   * http://momentjs.com/docs/#/query/is-same/
+   * @param t1
+   * @param t2
+   * @param unitoftime  可以判断年月日是否一致
+   * @return {boolean}
+   */
+  isSame(t1, t2, unitoftime) {
+    return moment(t1).isSame(t2, unitoftime);
+  },
+};
+
 exports.replaceT = replaceT;
 exports.stringToTable = stringToTable;
-exports.indexOfFromArr = indexOfFromArr;
+exports.date = date;
