@@ -1,3 +1,4 @@
 .idea
-billtemp/*
+billtemp
+billoriginal
 node_modules
