@@ -22,6 +22,26 @@ function stringToTable(data, rowSplitFunc, rowSeparator = '\n') {
   return table;
 }
 
+/**
+ * table转字符串
+ * @param table
+ * @return {string}
+ */
+function tableToString(table) {
+  let str = '';
+  table.forEach((arr) => {
+    if (Array.isArray(arr)) {
+      arr.forEach((item) => {
+        str += `${item}\t`;
+      });
+    } else {
+      str += arr;
+    }
+    str += '\n';
+  });
+  return str;
+}
+
 // 时间控制函数
 const date = {
   /**
@@ -44,11 +64,12 @@ const date = {
     return moment(t1).add(num, unitoftime);
   },
 
-  moment(date) {
-    return moment(date);
-  }
+  moment(t) {
+    return moment(t);
+  },
 };
 
 exports.replaceT = replaceT;
 exports.stringToTable = stringToTable;
+exports.tableToString = tableToString;
 exports.date = date;
