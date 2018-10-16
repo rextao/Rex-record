@@ -6,6 +6,8 @@ class Compare {
   constructor(data) {
     this.data = data;
     this.parsestr = '';
+    // 调用初始化函数，主要是运行得到parsestr
+    this.init();
   }
 
   // 支付宝与其他账单对比
