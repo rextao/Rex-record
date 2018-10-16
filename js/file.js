@@ -1,9 +1,5 @@
 const iconv = require('iconv-lite');
 const fs = require('fs');
-const config = require('./config');
-
-const {folder} = config;
-const billtemp = `./../${folder.billtemp}`;
 
 /**
  * 根据path目录，以encoding的编码形式，读取数据
@@ -49,11 +45,12 @@ function readDirAsync(path) {
 }
 
 /**
- * 将文件移动到to这个目录下
- * @param fromArr 为某个目录下的具体文件arr，或具体某个文件
+ * 将fromfolder文件下的全部文件fromfiles移动到to这个目录下
+ * @param fromfolder
+ * @param fromfiles
  * @param to
  */
-function moveFilesAsync(fromfolder, fromfiles, to) {
+function moveFiles(fromfolder, fromfiles, to) {
   fs.access(to, fs.constants.F_OK, (err) => {
     if (err) {
       fs.mkdirSync(to);
@@ -70,4 +67,4 @@ function moveFilesAsync(fromfolder, fromfiles, to) {
 
 exports.readFileAsync = readFileAsync;
 exports.readDirAsync = readDirAsync;
-exports.moveFilesAsync = moveFilesAsync;
+exports.moveFiles = moveFiles;
