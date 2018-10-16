@@ -42,7 +42,7 @@ class Compare {
         }
       }
     }
-
+    console.log(`成功解析：${result.length},cgb剩余：${cgb.length},alipay剩余：${alipay.length}`);
     this.setParseStr(result, cgb, alipay);
   }
 

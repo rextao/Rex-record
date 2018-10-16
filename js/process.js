@@ -46,7 +46,7 @@ class Process {
    */
   moveTempToOriginal() {
     file.readDirAsync(billtemp).then((files) => {
-      console.log(`*************账单已备份到${billoriginal}${this.foldername}/*************`);
+      console.log(`*************原始账单在：billoriginal/${this.foldername}/*************`);
       file.moveFiles(billtemp, files, `${billoriginal}${this.foldername}/`);
     }).catch(err => console.log(err));
   }
@@ -57,6 +57,7 @@ class Process {
    * @param billname
    */
   static writeAlltoBillParse(str, billname) {
+    console.log(`*************解析后的账单在：billparse/${billname}.csv*************`);
     file.writeStr(`${billparse}${billname}.csv`, str);
   }
 }

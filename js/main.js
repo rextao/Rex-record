@@ -12,10 +12,9 @@ parseData.then((data) => {
   // 初始化process，将timearr进行一些内部转换
   const process = new Process(timearr);
   // 移动billtemp下的文件到billoriginal文件夹下
-  // process.moveTempToOriginal();
-  // 账单比较
+  process.moveTempToOriginal();
+  // 账单比较,new时运行init，进行了账单比较，
   const compare = new Compare(data);
   // 将解析后的数据写入billparse目录,process.billname为写入文件的文件名
   Process.writeAlltoBillParse(compare.parsestr, process.billname);
-  compare.init();
 }).catch(err => console.log(err));
