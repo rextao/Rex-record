@@ -12,7 +12,7 @@ parseData.then((data) => {
   // 初始化process，将timearr进行一些内部转换
   const process = new Process(timearr);
   // 移动billtemp下的文件到billoriginal文件夹下
-  process.moveTempToOriginal();
+  // process.moveTempToOriginal();
   // 账单比较
   const compare = new Compare(data);
   compare.init();
