@@ -8,6 +8,7 @@ const { date } = require('./tools');
 const { folder } = config;
 const billtemp = `./../${folder.billtemp}`;
 const billoriginal = `./../${folder.billoriginal}`;
+const billparse = `./../${folder.billparse}`;
 
 class Process {
   constructor(timearr) {
@@ -51,10 +52,12 @@ class Process {
   }
 
   /**
-   * 将解析后的全部账单写入
+   * 将str全部内容写入billname这个文件中
+   * @param str
+   * @param billname
    */
-  writeAlltoBillParse() {
-
+  static writeAlltoBillParse(str, billname) {
+    file.writeStr(`${billparse}${billname}.csv`, str);
   }
 }
 

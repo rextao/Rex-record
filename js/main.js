@@ -15,5 +15,7 @@ parseData.then((data) => {
   // process.moveTempToOriginal();
   // 账单比较
   const compare = new Compare(data);
+  // 将解析后的数据写入billparse目录,process.billname为写入文件的文件名
+  Process.writeAlltoBillParse(compare.parsestr, process.billname);
   compare.init();
 }).catch(err => console.log(err));
