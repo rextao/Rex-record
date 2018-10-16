@@ -1,4 +1,7 @@
-// 用于对账本数据的比较
+/**
+ * 账单比较器
+ * 主要功能：将信用卡主要为cgb账单与支付宝账单比较，获取更加详细的信息
+ */
 const tools = require('./tools');
 const { date } = require('./tools');
 
@@ -7,17 +10,9 @@ class Compare {
     // 原始数据
     this.data = data;
     // 解析成功+cgb+alipay的全部字符串
-    this.parseallstr = '';
+    this.compareallstr = '';
     // 解析成功数组
-    this.parseresult = [];
-  }
-
-  getParseResult() {
-    return this.parseresult;
-  }
-
-  setParseResult(result) {
-    this.parseresult = result;
+    this.compared = [];
   }
 
   // 支付宝与其他账单对比
@@ -52,23 +47,32 @@ class Compare {
         }
       }
     }
-    this.parseresult = result;
     console.log(`成功解析：${result.length},cgb剩余：${cgb.length},alipay剩余：${alipay.length}`);
-    this.setParseStr(result, cgb, alipay);
+    this.setCompared(result);
+    this.setCompareAllStr(result, cgb, alipay);
+  }
+
+  getCompared() {
+    return this.compared;
+  }
+
+  // 设置比较结果数组
+  setCompared(result) {
+    this.compared = result;
   }
 
   /**
-   * 设置解析字符串
+   * 设置比较结果的全部字符串
    * @param result
    * @param cgb
    * @param alipay
    */
-  setParseStr(result, cgb, alipay) {
+  setCompareAllStr(result, cgb, alipay) {
     result.push('***************************************');
     result.push(...cgb);
     result.push('***************************************');
     result.push(...alipay);
-    this.parseallstr = tools.tableToString(result);
+    this.compareallstr = tools.tableToString(result);
   }
 
   init() {
