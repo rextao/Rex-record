@@ -71,6 +71,7 @@ function moveFiles(fromfolder, fromfiles, to) {
  * @param str
  */
 function writeStr(to, str) {
+  // 默认编码utf8
   fs.writeFileSync(to, str);
 }
 
