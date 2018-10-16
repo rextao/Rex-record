@@ -49,6 +49,13 @@ class Process {
       file.moveFiles(billtemp, files, `${billoriginal}${this.foldername}/`);
     }).catch(err => console.log(err));
   }
+
+  /**
+   * 将解析后的全部账单写入
+   */
+  writeAlltoBillParse() {
+
+  }
 }
 
 exports.Process = Process;
