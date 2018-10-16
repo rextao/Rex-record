@@ -44,6 +44,18 @@ function tableToString(table) {
 
 // 时间控制函数
 const date = {
+  /*与业务相关的*/
+  // 给09-07的开始日期，获取09月07日-10月06日
+  getBillRange(starttime) {
+    // end为moment类型
+    const end = date.add(starttime, 1, 'M').subtract(1, 'days');
+    return `${date.moment(starttime).format('MM月DD日')}-${end.format('MM月DD日')}`;
+  },
+  // 给2018-09-07的开始日期,获取2018-10
+  getNextMonth(starttime) {
+    return `${date.add(starttime, 1, 'M').format('YYYY-MM')}`;
+  },
+
   /**
    * 比较时间是否一致，moment封装
    * http://momentjs.com/docs/#/query/is-same/
