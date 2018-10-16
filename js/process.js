@@ -4,41 +4,52 @@
 const file = require('./file');
 const config = require('./config');
 const { date } = require('./tools');
+const { Parser } = require('./parse');
 
 const { folder } = config;
+
 const billtemp = `./../${folder.billtemp}`;
 const billoriginal = `./../${folder.billoriginal}`;
 const billparse = `./../${folder.billparse}`;
 
+
+function getAlipayBillDate(data) {
+  const datestr = data[0][0];
+  const arr = datestr.split('[');
+  const startTime = arr[1].split(' ')[0];
+  let endTime = arr[2].split(' ')[0];
+  endTime = date.subtract(endTime, 1, 'days').format('YYYY-MM-DD');
+  return [startTime, endTime];
+}
 class Process {
-  constructor(timearr) {
+  constructor() {
     // 账单名,init函数会对此赋值
     this.billname = '';
     // 文件夹名字，如2018年10月（）
     this.foldername = '';
-    this.init(timearr);
   }
 
   // 初始化process一些属性
-  init(arr) {
-    this.getBillName(arr);
+  init(data) {
+    // arr为账单起始与结束时间，[startTime, endTime],alipay中有账单时间显示
+    // [2018-09-07,2018-10-06]
+    const timearr = getAlipayBillDate(data);
+    // 根据开始时间设置文件与文件夹名
+    this.setBillname(timearr[0]);
+    // 移动billtemp下的文件到billoriginal文件夹下
+    this.moveTempToOriginal();
   }
 
   /**
-   * 根据时间，拼接需要的文件夹与文件名称
-   * @param arr [startTime, endTime]
+   * 根据开始时间，获取需要的文件夹与文件名称，设置在实例process属性上
+   * @param starttime 利用开始时间推出结束
    */
-  getBillName(arr) {
-    // 账单从7日到下月6日，不使用endTime,避免下个月前几天无数据
-    const [startTime] = arr;
-    // 2018-10类似这样的日期
-    const start = startTime.substr(0, 7);
-    // 2018-10-06类似这样的日期
-    const end = date.add(startTime, 1, 'M').subtract(1, 'days');
+  setBillname(starttime) {
+    // 账单从7日到下月6日
     // 2018-10
-    this.foldername = `${date.add(start, 1, 'M').format('YYYY-MM')}`;
+    this.foldername = date.getNextMonth(starttime);
     // 2018-10月账单(09月07日-10月06日)
-    this.billname = `${this.foldername}账单(${date.moment(startTime).format('MM月DD日')}-${end.format('MM月DD日')})`;
+    this.billname = `${this.foldername}账单(${date.getBillRange(starttime)})`;
   }
 
   /**

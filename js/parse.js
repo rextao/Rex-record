@@ -193,15 +193,6 @@ function callParser(billNameMap) {
 }
 
 class Parser {
-  static getAlipayBillDate(data) {
-    const datestr = data[0][0];
-    const arr = datestr.split('[');
-    const startTime = arr[1].split(' ')[0];
-    let endTime = arr[2].split(' ')[0];
-    endTime = date.subtract(endTime, 1, 'days').format('YYYY-MM-DD');
-    return [startTime, endTime];
-  }
-
   static init() {
     // 实际账单key-文件名
     const realBillName = getRealBillName();
