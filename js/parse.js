@@ -187,7 +187,7 @@ function callParser(billNameMap) {
 }
 
 class Parser {
-  static getBillDate(data) {
+  static getAlipayBillDate(data) {
     const datestr = data[0][0];
     const arr = datestr.split('[');
     const startTime = arr[1].split(' ')[0];
