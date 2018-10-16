@@ -3,4 +3,4 @@ billtemp/*
 billoriginal/*
 billparse/*
 node_modules
-!*.txt
+!README.md
