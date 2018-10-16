@@ -56,10 +56,8 @@ class Process {
    * 将temp下的文件挪动到original/2018-10类似的文件夹下
    */
   moveTempToOriginal() {
-    file.readDirAsync(billtemp).then((files) => {
-      console.log(`*************原始账单在：billoriginal/${this.foldername}/*************`);
-      file.moveFiles(billtemp, files, `${billoriginal}${this.foldername}/`);
-    }).catch(err => console.log(err));
+    console.log(`*************原始账单在：billoriginal/${this.foldername}/*************`);
+    file.moveFilesAsync(billtemp, `${billoriginal}${this.foldername}/`);
   }
 
   /**

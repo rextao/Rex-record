@@ -45,7 +45,9 @@ function readDirAsync(path) {
 }
 
 /**
- * 将fromfolder文件下的全部文件fromfiles移动到to这个目录下
+ * 内部使用：
+ * 给定某个文件夹fromfolder，以及文件夹下的文件数组fromfiles
+ * 移动到to文件夹下
  * @param fromfolder
  * @param fromfiles
  * @param to
@@ -66,6 +68,18 @@ function moveFiles(fromfolder, fromfiles, to) {
 }
 
 /**
+ * 将from文件夹下的全部内容移动到to目录下
+ * @param from
+ * @param to
+ */
+function moveFilesAsync(from, to) {
+  // 读取当前文件夹下内容，获取文件列表files
+  readDirAsync(from).then((files) => {
+    moveFiles(from, files, to);
+  }).catch(err => console.log(err));
+}
+
+/**
  * 向to这个文件，写入str的内容
  * @param to
  * @param str
@@ -77,5 +91,5 @@ function writeStr(to, str) {
 
 exports.readFileAsync = readFileAsync;
 exports.readDirAsync = readDirAsync;
-exports.moveFiles = moveFiles;
+exports.moveFilesAsync = moveFilesAsync;
 exports.writeStr = writeStr;
