@@ -1,4 +1,6 @@
 .idea
-billtemp
-billoriginal
+billtemp/*
+billoriginal/*
+billparse/*
 node_modules
+!*.txt
