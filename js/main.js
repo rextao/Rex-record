@@ -9,9 +9,11 @@ const parseData = Parser.init();
 parseData.then((data) => {
   // arr为账单起始与结束时间，[startTime, endTime]
   const timearr = Parser.getBillDate(data);
+  // 初始化process，将timearr进行一些内部转换
+  const process = new Process(timearr);
   // 移动billtemp下的文件到billoriginal文件夹下
-  const process = new Process();
-  process.init(timearr);
+  process.moveTempToOriginal();
+  // 账单比较
   const compare = new Compare(data);
   compare.init();
 }).catch(err => console.log(err));

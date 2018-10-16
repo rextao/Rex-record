@@ -10,11 +10,17 @@ const billtemp = `./../${folder.billtemp}`;
 const billoriginal = `./../${folder.billoriginal}`;
 
 class Process {
-  constructor() {
+  constructor(timearr) {
     // 账单名,init函数会对此赋值
     this.billname = '';
     // 文件夹名字，如2018年10月（）
     this.foldername = '';
+    this.init(timearr);
+  }
+
+  // 初始化process一些属性
+  init(arr) {
+    this.getBillName(arr);
   }
 
   /**
@@ -28,10 +34,10 @@ class Process {
     const start = startTime.substr(0, 7);
     // 2018-10-06类似这样的日期
     const end = date.add(startTime, 1, 'M').subtract(1, 'days');
-    // 2018年10月
-    this.foldername = `${date.add(start, 1, 'M').format('YYYY年MM月')}`;
-    // 10月账单(09月07日-10月06日)
-    this.billname = `${end.format('MM月')}账单(${date.moment(startTime).format('MM月DD日')}-${end.format('MM月DD日')})`;
+    // 2018-10
+    this.foldername = `${date.add(start, 1, 'M').format('YYYY-MM')}`;
+    // 2018-10月账单(09月07日-10月06日)
+    this.billname = `${this.foldername}账单(${date.moment(startTime).format('MM月DD日')}-${end.format('MM月DD日')})`;
   }
 
   /**
@@ -39,15 +45,9 @@ class Process {
    */
   moveTempToOriginal() {
     file.readDirAsync(billtemp).then((files) => {
-      file.moveFilesAsync(billtemp, files, `${billoriginal}${this.foldername}/`).then((state) => {
-        console.log(state);
-      });
-    });
-  }
-
-  init(arr) {
-    this.getBillName(arr);
-    this.moveTempToOriginal();
+      console.log(`*************账单已备份到${billoriginal}${this.foldername}/*************`);
+      file.moveFiles(billtemp, files, `${billoriginal}${this.foldername}/`);
+    }).catch(err => console.log(err));
   }
 }
 
