@@ -65,6 +65,16 @@ function moveFiles(fromfolder, fromfiles, to) {
   });
 }
 
+/**
+ * 向to这个文件，写入str的内容
+ * @param to
+ * @param str
+ */
+function writeStr(to, str) {
+  fs.writeFileSync(to, str);
+}
+
 exports.readFileAsync = readFileAsync;
 exports.readDirAsync = readDirAsync;
 exports.moveFiles = moveFiles;
+exports.writeStr = writeStr;
