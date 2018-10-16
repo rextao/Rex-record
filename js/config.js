@@ -5,7 +5,7 @@ const folder = {
   // 下载账单备份地方
   billoriginal: 'billoriginal/',
   // 解析后文件存储地址
-  billparse: 'billparse',
+  billparse: 'billparse/',
 };
 // 文件名字下的默认账单
 const filename = {
