@@ -4,10 +4,20 @@ const { date } = require('./tools');
 
 class Compare {
   constructor(data) {
+    // 原始数据
     this.data = data;
-    this.parsestr = '';
-    // 调用初始化函数，主要是运行得到parsestr
-    this.init();
+    // 解析成功+cgb+alipay的全部字符串
+    this.parseallstr = '';
+    // 解析成功数组
+    this.parseresult = [];
+  }
+
+  getParseResult() {
+    return this.parseresult;
+  }
+
+  setParseResult(result) {
+    this.parseresult = result;
   }
 
   // 支付宝与其他账单对比
@@ -42,6 +52,7 @@ class Compare {
         }
       }
     }
+    this.parseresult = result;
     console.log(`成功解析：${result.length},cgb剩余：${cgb.length},alipay剩余：${alipay.length}`);
     this.setParseStr(result, cgb, alipay);
   }
@@ -57,7 +68,7 @@ class Compare {
     result.push(...cgb);
     result.push('***************************************');
     result.push(...alipay);
-    this.parsestr = tools.tableToString(result);
+    this.parseallstr = tools.tableToString(result);
   }
 
   init() {
