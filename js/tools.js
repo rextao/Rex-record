@@ -32,7 +32,7 @@ function tableToString(table) {
   table.forEach((arr) => {
     if (Array.isArray(arr)) {
       arr.forEach((item) => {
-        str += `${item}\t`;
+        str += `${item},`;
       });
     } else {
       str += arr;
