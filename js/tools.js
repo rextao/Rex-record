@@ -23,7 +23,7 @@ function stringToTable(data, rowSplitFunc, rowSeparator = '\n') {
 }
 
 /**
- * table转字符串
+ * 二维数组table转字符串
  * @param table
  * @return {string}
  */
@@ -44,7 +44,7 @@ function tableToString(table) {
 
 // 时间控制函数
 const date = {
-  /*与业务相关的*/
+  // 与业务相关的
   // 给09-07的开始日期，获取09月07日-10月06日
   getBillRange(starttime) {
     // end为moment类型
