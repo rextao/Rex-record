@@ -3,15 +3,16 @@
  */
 const file = require('./file');
 const config = require('./config');
+const tools = require('./tools');
 const { date } = require('./tools');
-const { Parser } = require('./parse');
 
 const { folder } = config;
+const { category } = config;
 
 const billtemp = `./../${folder.billtemp}`;
 const billoriginal = `./../${folder.billoriginal}`;
 const billparse = `./../${folder.billparse}`;
-
+const billQuan = `./../${folder.billQuan}`;
 
 function getAlipayBillDate(data) {
   const datestr = data[0][0];
@@ -37,7 +38,7 @@ class Process {
     // 根据开始时间设置文件与文件夹名
     this.setBillname(timearr[0]);
     // 移动billtemp下的文件到billoriginal文件夹下
-    this.moveTempToOriginal();
+    // this.moveTempToOriginal();
   }
 
   /**
@@ -63,11 +64,42 @@ class Process {
   /**
    * 将str全部内容写入billname这个文件中
    * @param str
-   * @param billname
    */
-  static writeAlltoBillParse(str, billname) {
-    console.log(`*************解析后的账单在：billparse/${billname}.csv*************`);
-    file.writeStr(`${billparse}${billname}.csv`, str);
+  writeAlltoBillParse(str) {
+    console.log(`*************解析后的账单在：billparse/${this.billname}.csv*************`);
+    file.writeStr(`${billparse}${this.billname}.csv`, str);
+  }
+
+  // 根据config。category转换类型
+  static convertCategory(str, str1, str2) {
+    const categorykeys = Object.keys(category);
+    for (let i = 0; i < categorykeys.length; i += 1) {
+      const item = categorykeys[i];
+      if (str.indexOf(item) !== -1 || str1.indexOf(item) !== -1 || str2.indexOf(item) !== -1) {
+        return category[item];
+      }
+    }
+    return '';
+  }
+
+  // 将解析成功的数据，根据圈子笔记的格式转换后写入billQuan
+  writeComparedtoQuan(arr) {
+    const result = [];
+    arr.forEach((item) => {
+      const row = [];
+      row.push('支出'); // 类型
+      row.push(item[0]);// 时间
+      row.push(Process.convertCategory(item[2], item[3], item[4])); // 类别
+      row.push(item[1]); // 金额
+      // 描述信息
+      row.push(item[2]);
+      row.push(item[3]);
+      row.push(item[4]);
+      result.push(row);
+    });
+    const str = tools.tableToString(result);
+    console.log(`*************圈子账单在：billQuan/${this.billname}.csv*************`);
+    file.writeStr(`${billQuan}${this.billname}.csv`, str);
   }
 }
 

@@ -2,5 +2,6 @@
 billtemp/*
 billoriginal/*
 billparse/*
+billQuan/*
 node_modules
 !README.md
