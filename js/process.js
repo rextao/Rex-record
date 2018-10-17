@@ -91,6 +91,7 @@ class Process {
       row.push(item[0]);// 时间
       row.push(Process.convertCategory(item[2], item[3], item[4])); // 类别
       row.push(item[1]); // 金额
+      row.push('广发银行'); // 金额
       // 描述信息
       row.push(item[2]);
       row.push(item[3]);
