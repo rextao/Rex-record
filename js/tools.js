@@ -68,6 +68,10 @@ const date = {
     return moment(t1).isSame(t2, unitoftime);
   },
 
+  isAfter(t1, t2, unitoftime) {
+    return moment(t1).isAfter(t2, unitoftime);
+  },
+
   subtract(t1, num, unitoftime) {
     return moment(t1).subtract(num, unitoftime);
   },
