@@ -10,7 +10,6 @@
  */
 const config = require('./config');
 const tools = require('./tools');
-const { date } = require('./tools');
 const file = require('./file');
 
 const { folder } = config;
