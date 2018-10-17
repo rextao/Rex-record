@@ -14,6 +14,8 @@ parseData.then((data) => {
   // *********获取文件夹名，移动文件****************************
   const process = new Process();
   process.init(data);
-  // 将解析后的数据写入billparse目录,process.billname为写入文件的文件名
-  Process.writeAlltoBillParse(compare.compareallstr, process.billname);
+  // 将解析后的全部数据写入billparse目录
+  process.writeAlltoBillParse(compare.compareallstr);
+  // 将解析成功数据，写入billQuan文件夹下，文件名为process.billname
+  process.writeComparedtoQuan(compare.getCompared());
 }).catch(err => console.log(err));
