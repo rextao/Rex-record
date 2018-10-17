@@ -109,7 +109,6 @@ class AlipayParser {
       const converData = AlipayParser.convertor(outputstr);
       // 提取账单中需要的信息，并对数据进行转换；
       const exbill = AlipayParser.extract(converData);
-      console.log('alipay账单数：', exbill.length);
       return Promise.resolve(exbill);
     });
   }
@@ -166,7 +165,6 @@ class CgbParser {
       const converData = CgbParser.convertor(outputstr);
       // 提取账单中需要的信息，并对数据进行转换；
       const exbill = CgbParser.extract(converData);
-      console.log('cgb账单数：', exbill.length);
       return Promise.resolve(exbill);
     });
   }
