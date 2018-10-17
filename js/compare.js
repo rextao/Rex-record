@@ -63,15 +63,14 @@ class Compare {
 
   /**
    * 设置比较结果的全部字符串
-   * @param result
-   * @param cgb
-   * @param alipay
+   * @param items
    */
-  setCompareAllStr(result, cgb, alipay) {
-    result.push('***************************************');
-    result.push(...cgb);
-    result.push('***************************************');
-    result.push(...alipay);
+  setCompareAllStr(...items) {
+    const result = [];
+    items.forEach((item) => {
+      result.push(...item);
+      result.push('***************************************');
+    });
     this.compareallstr = tools.tableToString(result);
   }
 
