@@ -86,7 +86,7 @@ function moveFilesAsync(from, to) {
  */
 function writeStr(to, str) {
   // 默认编码utf8
-  fs.writeFileSync(to, str);
+  fs.writeFileSync(to, str, { encoding: 'utf8' });
 }
 
 exports.readFileAsync = readFileAsync;
