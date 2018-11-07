@@ -89,7 +89,12 @@ function writeStr(to, str) {
   fs.writeFileSync(to, str, { encoding: 'utf8' });
 }
 
+function appendFile(to, str) {
+  fs.appendFileSync(to, str, { encoding: 'utf8' });
+}
+
 exports.readFileAsync = readFileAsync;
 exports.readDirAsync = readDirAsync;
 exports.moveFilesAsync = moveFilesAsync;
 exports.writeStr = writeStr;
+exports.appendFile = appendFile;
