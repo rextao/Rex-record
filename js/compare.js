@@ -1,6 +1,7 @@
 /**
  * 账单比较器
  * 主要功能：将信用卡主要为cgb账单与支付宝账单比较，获取更加详细的信息
+ * 注意：由于比较使用了数组，故需要数据格式一致，尤其是时间与金额
  */
 const tools = require('./tools');
 const { date } = require('./tools');
@@ -25,6 +26,7 @@ class Compare {
     // if (others[0]) {
     //   this.cgbWithAlipay(others[0], alipayData);
     // }
+    // 循环alipay账单
     const alipayRes = [];
     for (let i = 1; i < alipayData.length; i += 1) {
       const item = alipayData[i];
@@ -33,7 +35,16 @@ class Compare {
   }
 
   loopOthers(item, others) {
-
+    const alipayDate = item[0];
+    const alipayPrice = item[1];
+    // 每个不同的账单
+    for (let i = 0; i < others.length; i += 1) {
+      const bill = others[i];
+      // 账单的每一行
+      for(let j = 1; j < bill.length; j += 1) {
+        const row = bill[j];
+      }
+    }
   }
 
   // cgb与alipay对比
