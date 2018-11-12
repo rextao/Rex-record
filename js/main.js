@@ -9,7 +9,7 @@ parseData.then((data) => {
   // ******************账单比较*******************
   const compare = new Compare(data);
   // // 进行了账单比较，
-  // compare.init();
+  compare.init();
   // // *********获取文件夹名，移动文件****************************
   // const process = new Process();
   // process.init(data);
