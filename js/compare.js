@@ -17,12 +17,23 @@ class Compare {
 
   // 支付宝与其他账单对比
   alipayWithOthers() {
+    // 支付宝账单
     const alipayData = this.data[0];
+    // 其他账单
     const others = this.data.splice(1);
     // others包含除alipay之外的其他账单
-    if (others[0]) {
-      this.cgbWithAlipay(others[0], alipayData);
+    // if (others[0]) {
+    //   this.cgbWithAlipay(others[0], alipayData);
+    // }
+    const alipayRes = [];
+    for (let i = 1; i < alipayData.length; i += 1) {
+      const item = alipayData[i];
+
     }
+  }
+
+  loopOthers(item, others) {
+
   }
 
   // cgb与alipay对比

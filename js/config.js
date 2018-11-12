@@ -12,12 +12,14 @@ const folder = {
 // 文件名字下的默认账单
 const filename = {
   // 文档解析顺序，如新增，需增加billOrder与bill
-  billOrder: ['alipay', 'cgb'],
+  // 支付宝账单，广发银行，中信银行
+  billOrder: ['alipay', 'cgb', 'citic'],
   bill: {
     // billtemp,文件夹下账单名，程序会搜索value，如搜索到则此账单为key
     // 例如，cgb: '123123',如文件名搜索到123123，则认为这个文件为cgb
     alipay: 'alipay', // 支付宝
     cgb: '100023557368', // 广发信用卡
+    citic: '账单明细', // 中信银行
   },
 };
 

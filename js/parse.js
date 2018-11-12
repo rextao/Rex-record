@@ -7,6 +7,11 @@
  * 2. 利用不同的文件解析器，读取每种账单为数组，并其他有价值的信息（为了比较，且不需要很多无用信息）
  * 注意：
  * 1. 在账单第一行增加自定义信息，从第二行开始为原始账单信息（通常为tilte）第三行是数据
+ * 1. 一定要保证第三行为真实数据，compare中，从第三行开始循环
+ * 如何添加新的解析器：
+ * 1. 在config,filename.billOrder，配置新的key（新的银行），bill中新增key-value
+ * 1. 此文件中新增类似CgbParser的解析器，有init方法
+ * 1. 在parseMap配置响应的解析器
  */
 const config = require('./config');
 const tools = require('./tools');
@@ -170,6 +175,47 @@ class CgbParser {
   }
 }
 
+class CiticParser {
+  constructor(name, folderName = billtemp) {
+    this.filename = name;
+    this.folderName = folderName;
+  }
+
+  // 将csv读取过来的str，利用split分为数组
+  static convertor(str) {
+    return tools.stringToTable(str, row => row.split(','));
+  }
+
+  // 提取需要的信息
+  static extract(data = []) {
+    const table = [];
+    // 在table第一行增加自定义信息，用于表示一些内容；无需要则增加no
+    table.push('no');
+    for (let i = 1; i < data.length; i += 1) {
+      const row = data[i];
+      const newrow = [];
+      // tools.replaceT将row[0]中的\t与两边空格去掉
+      newrow.push(tools.replaceT(row[1]));// 交易日
+      const price = tools.replaceT(row[6]);
+      newrow.push(price);// 金额
+      table.push(newrow);
+    }
+    return table;
+  }
+
+  init() {
+    // 获取每个文件的实际数据，String类型
+    return file.readFileAsync(this.folderName + this.filename, 'gbk').then((outputstr) => {
+      // 利用不同类型账单对应的convertor对数据进行转换
+      const converData = CiticParser.convertor(outputstr);
+      // 提取账单中需要的信息，并对数据进行转换；
+      const exbill = CiticParser.extract(converData);
+      return Promise.resolve(exbill);
+    });
+  }
+}
+
+// 调用解析器，因此解析器中最少要包含init方法
 function callParser(billNameMap) {
   const parseMap = {
     cgb(name) {
@@ -177,6 +223,9 @@ function callParser(billNameMap) {
     },
     alipay(name) {
       return new AlipayParser(name);
+    },
+    citic(name) {
+      return new CiticParser(name);
     },
   };
   const promiseArr = [];
