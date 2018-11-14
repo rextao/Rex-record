@@ -2,9 +2,14 @@
  * 账单比较器
  * 主要功能：将信用卡主要为cgb账单与支付宝账单比较，获取更加详细的信息
  * 注意：由于比较使用了数组，故需要数据格式一致，尤其是时间与金额
+ *       要求第一列为时间2018-11-05，第二列为金额;
+ *       账单数据从第others[2]行开始，支付宝账单从alipayData[1]开始
  */
 const tools = require('./tools');
 const { date } = require('./tools');
+const config = require('./config');
+
+const { billOrder } = config.filename;
 
 class Compare {
   constructor(data) {
@@ -20,31 +25,55 @@ class Compare {
   alipayWithOthers() {
     // 支付宝账单
     const alipayData = this.data[0];
+    console.log(`支付宝账单：${alipayData.length}`);
     // 其他账单
     const others = this.data.splice(1);
+    for (let i = 1; i < billOrder.length; i += 1) {
+      console.log(`${billOrder[i]}数：${others[i - 1].length - 2}`);
+    }
     // others包含除alipay之外的其他账单
     // if (others[0]) {
     //   this.cgbWithAlipay(others[0], alipayData);
     // }
     // 循环alipay账单
     const alipayRes = [];
+    const result = [];
     for (let i = 1; i < alipayData.length; i += 1) {
       const item = alipayData[i];
-
+      const compareResult = Compare.loopOthers(item, others);
+      if (compareResult.length !== 0) {
+        result.push(compareResult);
+      } else {
+        alipayRes.push(item);
+      }
     }
+
+    console.log(result.length);
+    console.log(alipayRes.length);
+    console.log(others[0].length);
+    console.log(others[1].length);
   }
 
-  loopOthers(item, others) {
+  static loopOthers(item, others) {
+    const result = [];
     const alipayDate = item[0];
     const alipayPrice = item[1];
     // 每个不同的账单
     for (let i = 0; i < others.length; i += 1) {
       const bill = others[i];
       // 账单的每一行
-      for(let j = 1; j < bill.length; j += 1) {
+      for (let j = 2; j < bill.length; j += 1) {
         const row = bill[j];
+        // 如账单时间相同，价格相同
+        if (date.isSame(alipayDate, row[0]) && alipayPrice === row[1]) {
+          result.push(...item);
+          result.push(...row.splice(2));
+          bill.splice(j, 1);
+          return result;
+        }
       }
     }
+    return result;
   }
 
   // cgb与alipay对比
