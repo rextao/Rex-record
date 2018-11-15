@@ -98,10 +98,6 @@ class Compare {
     return result;
   }
 
-  getCompared() {
-    return this.compared;
-  }
-
   // 设置比较结果数组
   setCompared(result) {
     this.compared = result;
