@@ -85,7 +85,27 @@ const date = {
   },
 };
 
+// convert {a:1}为 {key1:a, key2:1}
+function convertObj(obj, key1, key2) {
+  const re = {};
+  const key = Object.keys(obj)[0];
+  re[key1] = key;
+  re[key2] = obj[key];
+  return re;
+}
+
+function initConsoleTable(key1, key2) {
+  const consoleArr = [];
+  return function consoleTable(obj) {
+    if (!obj) {
+      return consoleArr;
+    }
+    consoleArr.push(convertObj(obj, key1, key2));
+    return consoleArr;
+  };
+}
 exports.replaceT = replaceT;
 exports.stringToTable = stringToTable;
 exports.tableToString = tableToString;
 exports.date = date;
+exports.initConsoleTable = initConsoleTable;

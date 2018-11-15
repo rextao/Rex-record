@@ -21,20 +21,42 @@ class Compare {
     this.compared = [];
   }
 
+  // console 打印一些信息，方便查看结果
+  static consoleOriTable(alipayData, others) {
+    const func = tools.initConsoleTable('bill', 'num');
+    func({ alipay: alipayData.length - 1 });
+    for (let i = 1; i < billOrder.length; i += 1) {
+      const key = billOrder[i];
+      const obj = {};
+      obj[key] = others[i - 1].length - 2;
+      func(obj);
+    }
+    return func();
+  }
+
+  static consoleResultTable(arr, key, value) {
+    const obj = arr[0];
+    obj[key] = value;
+    return arr;
+  }
+
+  static consoleResTable(arr, res, ohters) {
+    const obj1 = arr[0];
+    obj1.res = res;
+    for (let i = 1; i < arr.length; i += 1) {
+      const obj = arr[i];
+      obj.res = ohters[i - 1].length - 2;
+    }
+    return arr;
+  }
+
   // 支付宝与其他账单对比
   alipayWithOthers() {
     // 支付宝账单
     const alipayData = this.data[0];
-    console.log(`支付宝账单：${alipayData.length}`);
     // 其他账单
     const others = this.data.splice(1);
-    for (let i = 1; i < billOrder.length; i += 1) {
-      console.log(`${billOrder[i]}数：${others[i - 1].length - 2}`);
-    }
-    // others包含除alipay之外的其他账单
-    // if (others[0]) {
-    //   this.cgbWithAlipay(others[0], alipayData);
-    // }
+    const consoleArr = Compare.consoleOriTable(alipayData, others); // 用于存console.table打印的arr，方便查看结果
     // 循环alipay账单
     const alipayRes = [];
     const result = [];
@@ -47,11 +69,11 @@ class Compare {
         alipayRes.push(item);
       }
     }
-
-    console.log(result.length);
-    console.log(alipayRes.length);
-    console.log(others[0].length);
-    console.log(others[1].length);
+    this.setCompareAllStr(result, alipayRes, ...others);
+    console.log('**************解析结果：******************');
+    Compare.consoleResultTable(consoleArr, 'sucess', result.length);
+    Compare.consoleResTable(consoleArr, alipayRes.length, others);
+    console.table(consoleArr);
   }
 
   static loopOthers(item, others) {
