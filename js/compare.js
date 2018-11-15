@@ -28,24 +28,23 @@ class Compare {
     for (let i = 1; i < billOrder.length; i += 1) {
       const key = billOrder[i];
       const obj = {};
-      obj[key] = others[i - 1].length - 2;
+      obj[key] = others[i - 1].length === 0 ? 0 : others[i - 1].length - 2;
       func(obj);
     }
     return func();
   }
 
-  static consoleResultTable(arr, key, value) {
-    const obj = arr[0];
-    obj[key] = value;
-    return arr;
-  }
-
-  static consoleResTable(arr, res, ohters) {
-    const obj1 = arr[0];
-    obj1.res = res;
-    for (let i = 1; i < arr.length; i += 1) {
+  static consoleResultTable(arr, result, alipayRes, others) {
+    for (let i = 0; i < arr.length; i += 1) {
       const obj = arr[i];
-      obj.res = ohters[i - 1].length - 2;
+      if (i === 0) {
+        obj.success = result.length;
+        obj.res = alipayRes.length;
+      } else {
+        const otherLen = others[i - 1].length === 0 ? 0 : others[i - 1].length - 2;
+        obj.success = obj.num - otherLen;
+        obj.res = otherLen;
+      }
     }
     return arr;
   }
@@ -71,8 +70,7 @@ class Compare {
     }
     this.setCompareAllStr(result, alipayRes, ...others);
     console.log('**************解析结果：******************');
-    Compare.consoleResultTable(consoleArr, 'sucess', result.length);
-    Compare.consoleResTable(consoleArr, alipayRes.length, others);
+    Compare.consoleResultTable(consoleArr, result, alipayRes, others);
     console.table(consoleArr);
   }
 

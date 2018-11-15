@@ -236,8 +236,13 @@ function callParser(billNameMap) {
   // billNameMap存储的是
   billOrder.forEach((item) => {
     const vals = billNameMap[item];
-    const parser = parseMap[item](vals);
-    promiseArr.push(parser.init());
+    // 如果未找到账单
+    if (!vals) {
+      promiseArr.push([]);
+    } else {
+      const parser = parseMap[item](vals);
+      promiseArr.push(parser.init());
+    }
   });
   return Promise.all(promiseArr);
 }
