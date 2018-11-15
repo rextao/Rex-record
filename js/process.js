@@ -2,6 +2,7 @@
  * 处理过程
  */
 const file = require('./file');
+const tools = require('./tools');
 const config = require('./config');
 const { date } = require('./tools');
 
@@ -11,6 +12,7 @@ const { category } = config;
 const billtemp = `./../${folder.billtemp}`;
 const billoriginal = `./../${folder.billoriginal}`;
 const billparse = `./../${folder.billparse}`;
+const billSui = `./../${folder.billSui}`;
 
 function getAlipayBillDate(data) {
   const datestr = data[0][0];
@@ -71,33 +73,47 @@ class Process {
 
   // 将结果写入随手记中，根据随手记的格式转换后写入billSui
   // -。-圈子比较倒闭了吗-。-appstore没有软件了20181115
+  // 很多信息都是空着的
   writeComparedtoSui(arr) {
     const result = [];
     arr.forEach((item) => {
       const row = [];
       row.push('支出'); // 交易类型
       row.push(item[0]);// 日期
-      row.push(Process.convertCategory(item[2], item[3], item[4])); // 类别
+      // 分类，子分类
+      const cate = Process.convertCategory(item.splice(2));
+      if (cate) {
+        row.push(...cate.split('-'));
+      } else {
+        row.push('');
+        row.push('');
+      }
+      row.push(''); // 账户1
+      row.push(''); // 账户2
       row.push(item[1]); // 金额
-      // 描述信息
-      row.push(item[2]);
-      row.push(item[3]);
-      row.push(item[4]);
+      row.push(''); // 成员
+      row.push(''); // 商家
+      row.push(''); // 项目
+      row.push(...item.splice(2)); // 备注
       result.push(row);
     });
+    const str = tools.tableToString(result);
+    console.log(`*************随手记账单在：billSui/${this.billname}.csv*************`);
+    file.writeStr(`${billSui}${this.billname}.csv`, str);
   }
 
   // 根据config。category转换类型
   static convertCategory(itemArr) {
     const categorykeys = Object.keys(category);
     for (let i = 0; i < categorykeys.length; i += 1) {
-      const arr = categorykeys[i];
+      const catekey = categorykeys[i];
+      const arr = category[catekey];
       // category的每个词
       for (let j = 0; j < arr.length; j += 1) {
         const item = arr[j];
         for (let k = 0; k < itemArr.length; k += 1) {
-          if (item.indexOf(itemArr[k]) !== -1) {
-            return arr;
+          if (itemArr[k].indexOf(item) !== -1) {
+            return catekey;
           }
         }
       }

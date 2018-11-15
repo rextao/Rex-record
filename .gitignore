@@ -4,5 +4,6 @@ billtemp/*
 billoriginal/*
 billparse/*
 billQuan/*
+billSui/*
 node_modules
 !README.md

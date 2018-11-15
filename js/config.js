@@ -6,8 +6,8 @@ const folder = {
   billoriginal: 'billoriginal/',
   // 解析后文件存储地址
   billparse: 'billparse/',
-  // 解析的圈子账本存放地址
-  billQuan: 'billQuan/',
+  // 解析的随手记账本存放地址
+  billSui: 'billSui/',
 };
 // 文件名字下的默认账单
 const filename = {
