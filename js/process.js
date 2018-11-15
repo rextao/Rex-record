@@ -3,7 +3,6 @@
  */
 const file = require('./file');
 const config = require('./config');
-const tools = require('./tools');
 const { date } = require('./tools');
 
 const { folder } = config;
@@ -12,7 +11,6 @@ const { category } = config;
 const billtemp = `./../${folder.billtemp}`;
 const billoriginal = `./../${folder.billoriginal}`;
 const billparse = `./../${folder.billparse}`;
-const billQuan = `./../${folder.billQuan}`;
 
 function getAlipayBillDate(data) {
   const datestr = data[0][0];
@@ -32,13 +30,14 @@ class Process {
 
   // 初始化process一些属性
   init(data) {
-    // arr为账单起始与结束时间，[startTime, endTime],alipay中有账单时间显示
-    // [2018-09-07,2018-10-06]
+    // 获取alipay账单时间，时间在alipay的第一行
+    // arr为账单起始与结束时间，起始日期:[2018-10-07 00:00:00]    终止日期:[2018-11-07 00:00:00]
+    // 通过getAlipayBillDate，获取到[2018-09-07,2018-10-06]
     const timearr = getAlipayBillDate(data);
     // 根据开始时间设置文件与文件夹名
     this.setBillname(timearr[0]);
     // 移动billtemp下的文件到billoriginal文件夹下
-    this.moveTempToOriginal();
+    // this.moveTempToOriginal();
   }
 
   /**
@@ -80,27 +79,6 @@ class Process {
       }
     }
     return '';
-  }
-
-  // 将解析成功的数据，根据圈子笔记的格式转换后写入billQuan
-  writeComparedtoQuan(arr) {
-    const result = [];
-    arr.forEach((item) => {
-      const row = [];
-      row.push('支出'); // 类型
-      row.push(item[0]);// 时间
-      row.push(Process.convertCategory(item[2], item[3], item[4])); // 类别
-      row.push(item[1]); // 金额
-      row.push('广发银行'); // 金额
-      // 描述信息
-      row.push(item[2]);
-      row.push(item[3]);
-      row.push(item[4]);
-      result.push(row);
-    });
-    const str = tools.tableToString(result);
-    console.log(`*************圈子账单在：billQuan/${this.billname}.csv*************`);
-    file.writeStr(`${billQuan}${this.billname}.csv`, str);
   }
 }
 
