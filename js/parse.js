@@ -197,7 +197,11 @@ class CiticParser {
       // tools.replaceT将row[0]中的\t与两边空格去掉
       newrow.push(tools.replaceT(row[1]));// 交易日
       const price = tools.replaceT(row[6]);
-      newrow.push(price);// 金额
+      if (i === 0) {
+        newrow.push(price);// 入账金额
+      } else {
+        newrow.push(parseFloat(price));// 入账金额
+      }
       table.push(newrow);
     }
     return table;
