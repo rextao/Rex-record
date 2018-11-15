@@ -69,13 +69,37 @@ class Process {
     file.writeStr(`${billparse}${this.billname}.csv`, str);
   }
 
+  // 将结果写入随手记中，根据随手记的格式转换后写入billSui
+  // -。-圈子比较倒闭了吗-。-appstore没有软件了20181115
+  writeComparedtoSui(arr) {
+    const result = [];
+    arr.forEach((item) => {
+      const row = [];
+      row.push('支出'); // 交易类型
+      row.push(item[0]);// 日期
+      row.push(Process.convertCategory(item[2], item[3], item[4])); // 类别
+      row.push(item[1]); // 金额
+      // 描述信息
+      row.push(item[2]);
+      row.push(item[3]);
+      row.push(item[4]);
+      result.push(row);
+    });
+  }
+
   // 根据config。category转换类型
-  static convertCategory(str, str1, str2) {
+  static convertCategory(itemArr) {
     const categorykeys = Object.keys(category);
     for (let i = 0; i < categorykeys.length; i += 1) {
-      const item = categorykeys[i];
-      if (str.indexOf(item) !== -1 || str1.indexOf(item) !== -1 || str2.indexOf(item) !== -1) {
-        return category[item];
+      const arr = categorykeys[i];
+      // category的每个词
+      for (let j = 0; j < arr.length; j += 1) {
+        const item = arr[j];
+        for (let k = 0; k < itemArr.length; k += 1) {
+          if (item.indexOf(itemArr[k]) !== -1) {
+            return arr;
+          }
+        }
       }
     }
     return '';

@@ -14,4 +14,5 @@ parseData.then((data) => {
   process.init(data);
   // 将解析后的全部数据写入billparse目录
   process.writeAlltoBillParse(compare.compareallstr);
+  process.writeComparedtoSui(compare.compared);
 }).catch(err => console.log(err));
