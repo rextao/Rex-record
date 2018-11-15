@@ -100,7 +100,7 @@ class AlipayParser {
           newrow.push(AlipayParser.priceProcess(price, inorout));// 入账金额
           newrow.push(tools.replaceT(row[7]));// 交易对方
           newrow.push(tools.replaceT(row[8]));// 商品名称
-          newrow.push(state);// 交易状态
+          // newrow.push(state);// 交易状态，其实不需要显示交易状态，只有交易成功的数据被记录
           table.push(newrow);
         }
       }
