@@ -39,7 +39,7 @@ class Process {
     // 根据开始时间设置文件与文件夹名
     this.setBillname(timearr[0]);
     // 移动billtemp下的文件到billoriginal文件夹下
-    // this.moveTempToOriginal();
+    this.moveTempToOriginal();
   }
 
   /**
@@ -48,8 +48,8 @@ class Process {
    */
   setBillname(starttime) {
     // 账单从7日到下月6日
-    // 2018-10
-    this.foldername = date.getNextMonth(starttime);
+    // starttime = 2018-10-1;date.getNextMonth(starttime);获取为2018-11
+    this.foldername = starttime.slice(0, 7);
     // 2018-10月账单(09月07日-10月06日)
     this.billname = `${this.foldername}账单(${date.getBillRange(starttime)})`;
   }
@@ -75,13 +75,13 @@ class Process {
   // -。-圈子比较倒闭了吗-。-appstore没有软件了20181115
   // 很多信息都是空着的
   writeComparedtoSui(arr) {
-    const result = [];
+    const result = [['交易类型', '日期', '分类', '子分类', '账户1', '账户2', '金额', '成员', '商家', '项目', '备注']];
     arr.forEach((item) => {
       const row = [];
       row.push('支出'); // 交易类型
       row.push(item[0]);// 日期
       // 分类，子分类
-      const cate = Process.convertCategory(item.splice(2));
+      const cate = Process.convertCategory(item.slice(2));
       if (cate) {
         row.push(...cate.split('-'));
       } else {
@@ -94,7 +94,8 @@ class Process {
       row.push(''); // 成员
       row.push(''); // 商家
       row.push(''); // 项目
-      row.push(...item.splice(2)); // 备注
+      row.push(''); // 备注
+      row.push(...item.slice(2)); // 其他信息
       result.push(row);
     });
     const str = tools.tableToString(result);
