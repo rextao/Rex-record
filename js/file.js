@@ -83,10 +83,12 @@ function moveFilesAsync(from, to) {
  * 向to这个文件，写入str的内容
  * @param to
  * @param str
+ * @param encoding 编码集
  */
-function writeStr(to, str) {
-  // 默认编码utf8
-  fs.writeFileSync(to, str, { encoding: 'utf8' });
+function writeStr(to, str, encoding = 'GBK') {
+  // 由于使用utf-8进行编码，excel打开csv乱码
+  const newStr = iconv.encode(str, encoding); // 转编码
+  fs.writeFileSync(to, newStr);
 }
 
 function appendFile(to, str) {
