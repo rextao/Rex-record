@@ -202,6 +202,7 @@ class CiticParser {
       } else {
         newrow.push(parseFloat(price));// 入账金额
       }
+      newrow.push(tools.replaceT(row[3]));// 交易描述
       table.push(newrow);
     }
     return table;

@@ -57,6 +57,7 @@ class Compare {
     const others = this.data.splice(1);
     const consoleArr = Compare.consoleOriTable(alipayData, others); // 用于存console.table打印的arr，方便查看结果
     // 循环alipay账单
+    // 循环支付宝账单的每一条，去查看哪个信用卡账单有
     const alipayRes = [];
     const result = [];
     for (let i = 1; i < alipayData.length; i += 1) {
@@ -108,7 +109,9 @@ class Compare {
    * @param items
    */
   setCompareAllStr(...items) {
+    const str = `*******数据以*区分为：比较结果，${config.filename.billOrder.toString()}********************************`;
     const result = [];
+    result.push(str);// 主要用于标注信息，避免打开文件后不知道啥意思
     items.forEach((item) => {
       result.push(...item);
       result.push('***************************************');
