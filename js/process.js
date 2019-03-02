@@ -14,9 +14,8 @@ const billoriginal = `./../${folder.billoriginal}`;
 const billparse = `./../${folder.billparse}`;
 const billSui = `./../${folder.billSui}`;
 
-function getAlipayBillDate(data) {
-  const datestr = data[0][0];
-  const arr = datestr.split('[');
+function getAlipayBillDate(billTimeRange) {
+  const arr = billTimeRange.split('[');
   const startTime = arr[1].split(' ')[0];
   let endTime = arr[2].split(' ')[0];
   endTime = date.subtract(endTime, 1, 'days').format('YYYY-MM-DD');
@@ -31,15 +30,15 @@ class Process {
   }
 
   // 初始化process一些属性
-  init(data) {
-    // 获取alipay账单时间，时间在alipay的第一行
+  init(billTimeRange) {
+    // 获取alipay账单时间，时间在compare时保存在billTimeRange中
     // arr为账单起始与结束时间，起始日期:[2018-10-07 00:00:00]    终止日期:[2018-11-07 00:00:00]
     // 通过getAlipayBillDate，获取到[2018-09-07,2018-10-06]
-    const timearr = getAlipayBillDate(data);
+    const timearr = getAlipayBillDate(billTimeRange);
     // 根据开始时间设置文件与文件夹名
     this.setBillname(timearr[0]);
     // 移动billtemp下的文件到billoriginal文件夹下
-    this.moveTempToOriginal();
+    // this.moveTempToOriginal();
   }
 
   /**
@@ -74,7 +73,8 @@ class Process {
   // 将结果写入随手记中，根据随手记的格式转换后写入billSui
   // -。-圈子比较倒闭了吗-。-appstore没有软件了20181115
   // 很多信息都是空着的
-  writeComparedtoSui(arr) {
+  // 由于考虑到微信剩余的，出自银行卡
+  writeComparedtoSui(arr, wechatRes) {
     const result = [['交易类型', '日期', '分类', '子分类', '账户1', '账户2', '金额', '成员', '商家', '项目', '备注']];
     arr.forEach((item) => {
       const row = [];
@@ -88,15 +88,40 @@ class Process {
         row.push('');
         row.push('');
       }
-      row.push(''); // 账户1
+      row.push('现金'); // 账户1
       row.push(''); // 账户2
       row.push(item[1]); // 金额
-      row.push(''); // 成员
+      row.push('本人'); // 成员
       row.push(''); // 商家
       row.push(''); // 项目
       row.push(''); // 备注
       row.push(...item.slice(2)); // 其他信息
       result.push(row);
+    });
+    Object.keys(wechatRes).forEach((key) => {
+      const row = [];
+      const val = wechatRes[key];
+      if (Array.isArray(val) && val[3].indexOf('建设银行') !== -1) {
+        row.push('支出'); // 交易类型
+        row.push(val[0]);// 日期
+        // 分类，子分类
+        const cate = Process.convertCategory(val[2]);
+        if (cate) {
+          row.push(...cate.split('-'));
+        } else {
+          row.push('');
+          row.push('');
+        }
+        row.push('建设银行'); // 账户1
+        row.push(''); // 账户2
+        row.push(val[1]); // 金额
+        row.push('本人'); // 成员
+        row.push(''); // 商家
+        row.push(''); // 项目
+        row.push(''); // 备注
+        row.push(val[2]); // 其他信息
+        result.push(row);
+      }
     });
     const str = tools.tableToString(result);
     console.log(`*************随手记账单在：billSui/${this.billname}.csv*************`);

@@ -6,7 +6,6 @@
  *       账单数据从第others[2]行开始，支付宝账单从alipayData[1]开始
  */
 const tools = require('./tools');
-const { date } = require('./tools');
 const config = require('./config');
 
 const { billOrder } = config.filename;
@@ -15,112 +14,122 @@ class Compare {
   constructor(data) {
     // 原始数据
     this.data = data;
+    // 账单起止时间
+    this.billTimeRange = data[0].billTimeRange;// data[0]为alipayData
     // 解析成功+cgb+alipay的全部字符串
     this.compareallstr = '';
     // 解析成功数组
     this.compared = [];
+    // 微信剩余数据
+    this.wechatRes = {};
   }
 
-  // console 打印一些信息，方便查看结果
-  static consoleOriTable(alipayData, others) {
-    const func = tools.initConsoleTable('bill', 'num');
-    func({ alipay: alipayData.length - 1 });
-    for (let i = 1; i < billOrder.length; i += 1) {
-      const key = billOrder[i];
-      const obj = {};
-      obj[key] = others[i - 1].length === 0 ? 0 : others[i - 1].length - 2;
-      func(obj);
-    }
-    return func();
-  }
-
-  static consoleResultTable(arr, result, alipayRes, others) {
-    for (let i = 0; i < arr.length; i += 1) {
-      const obj = arr[i];
-      if (i === 0) {
-        obj.success = result.length;
-        obj.res = alipayRes.length;
-      } else {
-        const otherLen = others[i - 1].length === 0 ? 0 : others[i - 1].length - 2;
-        obj.success = obj.num - otherLen;
-        obj.res = otherLen;
-      }
-    }
-    return arr;
-  }
-
-  // 支付宝与其他账单对比
-  alipayWithOthers() {
+  // 循环银行账单，查找相符的微信与支付宝账单
+  loopBankBill() {
+    const result = [];
+    const bankRes = [];
     // 支付宝账单
-    const alipayData = this.data[0];
-    // 其他账单
-    const others = this.data.splice(1);
-    const consoleArr = Compare.consoleOriTable(alipayData, others); // 用于存console.table打印的arr，方便查看结果
-    // 循环alipay账单
-    // 循环支付宝账单的每一条，去查看哪个信用卡账单有
-    const alipayRes = [];
-    const result = [];
-    for (let i = 1; i < alipayData.length; i += 1) {
-      const item = alipayData[i];
-      const compareResult = Compare.loopOthers(item, others);
-      if (compareResult.length !== 0) {
-        result.push(compareResult);
-      } else {
-        alipayRes.push(item);
-      }
-    }
-    this.setCompareAllStr(result, alipayRes, ...others);
-    this.setCompared(result);
-    console.log('**************解析结果：******************');
-    Compare.consoleResultTable(consoleArr, result, alipayRes, others);
-    console.table(consoleArr);
-  }
-
-  // 循环其他账单，分别与alipay账单的每一行（item）比较，获得结果
-  static loopOthers(item, others) {
-    const result = [];
-    const alipayDate = item[0];
-    const alipayPrice = item[1];
-    // 每个不同的账单
-    for (let i = 0; i < others.length; i += 1) {
-      const bill = others[i];
-      // 账单的每一行
-      for (let j = 2; j < bill.length; j += 1) {
-        const row = bill[j];
-        // 如账单时间相同，价格相同
-        if (date.isSame(alipayDate, row[0]) && alipayPrice === row[1]) {
-          result.push(...item);
-          result.push(...row.splice(2));
-          bill.splice(j, 1);
-          return result;
+    const [alipayData, wechatData] = this.data;
+    // 仅仅用于console.table显示使用
+    const alipayOriSum = alipayData.billSum;
+    const wechatOriSum = wechatData.billSum;
+    // 数据的原始长度，用于最后console.table使用,consoleTableObj这个对象只是用于显示结果使用
+    const consoleTableObj = {
+      alipay: { ori: alipayOriSum, res: 0, success: 0 },
+      wechat: { ori: wechatOriSum, res: 0, success: 0 },
+    };
+    // 银行账单
+    const bankBills = this.data.splice(2);
+    // bankBills可能有多个账单，如中信或支付宝账单
+    // 由于银行账单第一行为自定义信息，第二行为title信息，顾从第三行开始循环
+    bankBills.forEach((bill, index) => {
+      const resTemp = [];
+      const tempObj = {};
+      const bankIndex = index + 2;// 前两个账单是支付宝与微信
+      tempObj.ori = bill.length;
+      for (let i = 2; i < bill.length; i += 1) {
+        const item = bill[i];
+        const [time, price] = item;
+        const key = `${time}##${price.toFixed(2)}`;
+        let sumTemp = 0;
+        if (alipayData[key]) {
+          Compare.pushCompareResult(result, item, alipayData, key);
+          // delete操作无法在push函数中进行
+          delete alipayData[key];
+          sumTemp = alipayData.billSum;
+          alipayData.billSum = sumTemp - 1;
+        } else if (wechatData[key]) {
+          Compare.pushCompareResult(result, item, wechatData, key);
+          // delete操作无法在push函数中进行
+          delete wechatData[key];
+          sumTemp = wechatData.billSum;
+          wechatData.billSum = sumTemp - 1;
+        } else {
+          resTemp.push(item);// 没有匹配上的数据
         }
       }
-    }
-    return result;
-  }
-
-  // 设置比较结果数组
-  setCompared(result) {
+      tempObj.res = resTemp.length;
+      tempObj.success = tempObj.ori - tempObj.res;
+      consoleTableObj[billOrder[bankIndex]] = tempObj;
+      bankRes.push(resTemp);
+    });
+    consoleTableObj.alipay.res = alipayData.billSum;
+    consoleTableObj.wechat.res = wechatData.billSum;
+    consoleTableObj.alipay.success = consoleTableObj.alipay.ori - consoleTableObj.alipay.res;
+    consoleTableObj.wechat.success = consoleTableObj.wechat.ori - consoleTableObj.wechat.res;
+    // 保存解析数据
     this.compared = result;
+    // 将数据转换为字符串
+    this.setCompareAllStr(result, alipayData, wechatData, bankRes);
+    // 将微信剩余数据保存下
+    this.wechatRes = wechatData;
+    console.log('**************解析结果：******************');
+    console.table(consoleTableObj);
   }
 
   /**
    * 设置比较结果的全部字符串
-   * @param items
+   * @param compared    解析成功数据
+   * @param alipayData  支付宝剩余数据
+   * @param wechatData  微信剩余数据
+   * @param bankRes     银行剩余数据
    */
-  setCompareAllStr(...items) {
-    const str = `*******数据以*区分为：比较结果，${config.filename.billOrder.toString()}********************************`;
+  setCompareAllStr(compared, alipayData, wechatData, bankRes) {
     const result = [];
-    result.push(str);// 主要用于标注信息，避免打开文件后不知道啥意思
-    items.forEach((item) => {
+    result.push('*****************解析成功数据**********************');
+    result.push(...compared);
+    result.push('*****************支付宝剩余数据**********************');
+    const alipayArr = Object.keys(alipayData).map(key => alipayData[key]);
+    result.push(...alipayArr);
+    result.push('*****************微信剩余数据**********************');
+    const wechatArr = Object.keys(wechatData).map(key => wechatData[key]);
+    result.push(...wechatArr);
+    bankRes.forEach((item, index) => {
+      const billName = billOrder[index + 2];
+      result.push(`*****************${billName}剩余数据**********************`);
       result.push(...item);
-      result.push('***************************************');
     });
     this.compareallstr = tools.tableToString(result);
   }
 
+  /**
+   * 获取banbill的全部信息，支付宝或微信除了价格和时间信息，push到result中
+   * @param result    结果result数组
+   * @param bankbill  信用卡账单
+   * @param obj     支付宝或微信账单对象
+   * @param key     对应的key（time##price）
+   * @returns {*|number}
+   */
+  static pushCompareResult(result, bankbill, obj, key) {
+    // 如果支付宝或微信账单有这个key，说明数据存在
+    const temp = [];
+    temp.push(...bankbill);
+    temp.push(...obj[key].splice(2));
+    result.push(temp);
+  }
+
   init() {
-    this.alipayWithOthers();
+    this.loopBankBill();
   }
 }
 exports.Compare = Compare;
