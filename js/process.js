@@ -38,7 +38,7 @@ class Process {
     // 根据开始时间设置文件与文件夹名
     this.setBillname(timearr[0]);
     // 移动billtemp下的文件到billoriginal文件夹下
-    // this.moveTempToOriginal();
+    this.moveTempToOriginal();
   }
 
   /**
