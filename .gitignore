@@ -1,9 +1,11 @@
-.idea
+﻿.idea
 圈子账本
 billtemp/*
 billoriginal/*
 billparse/*
 billQuan/*
 billSui/*
+*.csv
+*.xlsx
 node_modules
 !README.md
